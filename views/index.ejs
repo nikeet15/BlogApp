@@ -1,0 +1,14 @@
+<%- include ("partials/header") %>
+
+<h1>INDEX PAGE</h1>
+  
+<% blogs.forEach(function(blog){ %>
+    <div>
+        <h2><%= blog.title %></h2>
+        <img src="<%= blog.image %>" alt="image1">
+        <span><%= blog.body %></span>
+        <p><%= blog.created %></p>
+    </div>
+<% }) %>
+
+<%- include ("partials/footer") %>
