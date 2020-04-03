@@ -48,6 +48,9 @@ app.get("/blogs", function(req, res){
     });
 });
 
+app.get("/blogs/new", function (req, res) {
+    res.render("new");
+});
 
 
 
