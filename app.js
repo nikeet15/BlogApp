@@ -48,10 +48,23 @@ app.get("/blogs", function(req, res){
     });
 });
 
-app.get("/blogs/new", function (req, res) {
+app.get("/blogs/new", function(req, res) {
     res.render("new");
 });
 
+app.post("/blogs", function(req, res){
+    Blog.create(req.body.blog, function(err, newblog){
+        if(!err){
+            console.log("2. new blog added to database");
+            res.redirect("/");
+        }
+
+        else{
+            console.log("2. error in adding new blog");
+            res.render("new");
+        }
+    });
+});
 
 
 
