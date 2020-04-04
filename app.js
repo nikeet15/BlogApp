@@ -56,6 +56,7 @@ app.post("/blogs", function(req, res){
     Blog.create(req.body.blog, function(err, newblog){
         if(!err){
             console.log("2. new blog added to database");
+            console.log(newblog);
             res.redirect("/");
         }
 
@@ -66,7 +67,18 @@ app.post("/blogs", function(req, res){
     });
 });
 
-
+app.get("/blogs/:id", function(req, res){
+    Blog.findById(req.params.id, function (err, foundblog) {
+        if (!err) {
+            console.log("1.Blog found");
+            console.log(foundblog);
+            res.render("show", { blog: foundblog });
+        }
+        else{
+            console.log("3.Blog not found");
+        }
+    });
+});
 
 
 
