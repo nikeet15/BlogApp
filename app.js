@@ -1,6 +1,6 @@
 //Ctrl+j to toggle terminal
 
-//app config............
+//APP CONFIG............
 var express = require("express");
 var app = express();                                 // express() return an object 
 
@@ -11,7 +11,7 @@ app.use(express.static("public"));                  //making public a static dir
 app.set("view engine", "ejs");                      //if written no need to write .ejs only write name of file
 
 var methodOverride= require("method-override");
-app.use(methodOverride("_method"));
+app.use(methodOverride("_method"));                 //ENABLES METHOD OVERRIDING
 
 var mongoose = require("mongoose");
 mongoose.connect('mongodb://localhost:27017/EmployeeDB', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }, function (err) {
@@ -22,7 +22,7 @@ mongoose.connect('mongodb://localhost:27017/EmployeeDB', { useNewUrlParser: true
         console.log("error in DB cnnection" + err);
 });
 
-//mongoose model schema.............
+//MONGOOSE MODEL SCHEMA.............
 var blogSchema= mongoose.Schema({
     title: String,
     image: String,
@@ -32,8 +32,8 @@ var blogSchema= mongoose.Schema({
 
 var Blog= mongoose.model("blog", blogSchema);
 
-// routes..............
-app.get("/", function (req, res) {
+//ROUTES..............
+app.get("/", function (req, res) {                         // INDEX PAGE
     res.redirect("blogs");
 });
 
@@ -50,11 +50,11 @@ app.get("/blogs", function(req, res){
     });
 });
 
-app.get("/blogs/new", function(req, res) {
+app.get("/blogs/new", function(req, res) {                  // NEW POST ADDING PAGE
     res.render("new");
 });
 
-app.post("/blogs", function(req, res){
+app.post("/blogs", function(req, res){                      // ADD NEW POST AND REDIRECT TO INDEX PAGE
     Blog.create(req.body.blog, function(err, newblog){
         if(!err){
             console.log("2. new blog added to database");
@@ -69,7 +69,7 @@ app.post("/blogs", function(req, res){
     });
 });
 
-app.get("/blogs/:id", function(req, res){
+app.get("/blogs/:id", function(req, res){                   // SHOW A PARTICULAR BLOG
     Blog.findById(req.params.id, function (err, foundblog) {
         if (!err) {
             console.log("3. Blog found");
@@ -82,7 +82,7 @@ app.get("/blogs/:id", function(req, res){
     });
 });
 
-app.get("/blogs/:id/edit", function(req, res){
+app.get("/blogs/:id/edit", function(req, res){              // UPDATE A PARTICULAR BLOG
     Blog.findById(req.params.id, function (err, foundBlog) {
         if (!err) {
             console.log("4.edit Blog found");
@@ -95,7 +95,7 @@ app.get("/blogs/:id/edit", function(req, res){
     });
 });
 
-app.put("/blogs/:id", function(req, res){
+app.put("/blogs/:id", function(req, res){                   // PUT THE UPDATED BLOG TO DATABASE AND REDIRECT TO /blog/:id
     Blog.findByIdAndUpdate(req.params.id, req.body.blog, function(err, updatedBlog){
         if (!err) {
             console.log("5.Blog updated");
@@ -108,7 +108,7 @@ app.put("/blogs/:id", function(req, res){
     });
 });
 
-app.delete("/blogs/:id", function(req, res){
+app.delete("/blogs/:id", function(req, res){                // DELETE A BLOG
     Blog.findByIdAndRemove (req.params.id, function(err,){
         if (!err) {
             console.log("6.Blog deleted");
