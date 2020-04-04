@@ -80,6 +80,19 @@ app.get("/blogs/:id", function(req, res){
     });
 });
 
+ app.get("/blogs/:id/edit", function(req, res){
+     Blog.findById(req.params.id, function (err, foundblog) {
+         if (!err) {
+             console.log("3.Blog found");
+             console.log(foundblog);
+             res.render("edit", { blog: foundblog });
+         }
+         else {
+             console.log("3.Blog not found");
+         }
+     });
+ });
+
 
 
  
