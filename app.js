@@ -14,9 +14,9 @@ var methodOverride= require("method-override");
 app.use(methodOverride("_method"));
 
 var mongoose = require("mongoose");
-mongoose.connect('mongodb://localhost:27017/EmployeeDB', { useNewUrlParser: true, useUnifiedTopology: true }, function (err) {
+mongoose.connect('mongodb://localhost:27017/EmployeeDB', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }, function (err) {
     if (!err)
-        console.log("connection successfull");
+        console.log("Database connection successfull");
 
     else
         console.log("error in DB cnnection" + err);
@@ -105,12 +105,23 @@ app.put("/blogs/:id", function(req, res){
         else {
             console.log("5. Problem in updating blog");
         }
-    })
+    });
 });
 
+app.delete("/blogs/:id", function(req, res){
+    Blog.findByIdAndRemove (req.params.id, function(err,){
+        if (!err) {
+            console.log("6.Blog deleted");
+            res.redirect("/");
+        }
+        else {
+            console.log("6. Problem in deleting blog");
+        }
+    }); 
+});
 
  
 //starting server code..............................
 app.listen(3000, function () {
-    console.log("server started");
+    console.log("Server started");
 });
