@@ -32,7 +32,7 @@ var blogSchema= mongoose.Schema({
 
 var Blog= mongoose.model("blog", blogSchema);
 
-//routes..............
+// routes..............
 app.get("/", function (req, res) {
     res.redirect("blogs");
 });

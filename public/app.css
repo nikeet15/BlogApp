@@ -4,9 +4,18 @@ i.icon{
 
 #mybody{
     margin-top: 5em;
-    margin-left: 2em;
+    /* margin-left: 2em; */
 }
 
 #deleteform{
     display: inline;
+}
+
+#myitem{
+    padding-top: 2em;
+    padding-bottom: 2em;
+}
+
+#mybox{
+    padding-top: 2em;
 }

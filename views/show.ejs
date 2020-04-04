@@ -3,10 +3,14 @@
 
 <div class= "ui main text container segment">
     <div class= "ui huge header"><%= blog.title %></div>
-    <div class= "ui top attached">
+   
+    <div class= "ui top attached" id= "mybox">
         <div class="item">
-            <img class="ui centered round image" src="<%= blog.image %>" alt="image1">
-        
+
+            <div class= "ui medium bordered image">
+                <img src="<%= blog.image %>" alt="image1">
+            </div>
+            
             <div class= "content">
                 <span><%= blog.created.toDateString() %></span>
             </div>
