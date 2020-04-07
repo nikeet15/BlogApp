@@ -24,17 +24,43 @@ mongoose.connect('mongodb://localhost:27017/EmployeeDB', { useNewUrlParser: true
 
 //MONGOOSE MODEL SCHEMA.............
 var blogSchema= mongoose.Schema({
+    userID: String,
     title: String,
     image: String,
     body: String,
     created: {type: Date, default: Date.now}
 });
 
-var Blog= mongoose.model("blog", blogSchema);
+var loginSchema = mongoose.Schema({
+    userID: String,
+    password: String
+});
+
+var Blog= mongoose.model("blog", blogSchema);       // blog DB object
+var Login= mongoose.model("login", loginSchema);    // login DB object
 
 //ROUTES..............
 app.get("/", function (req, res) {                         // INDEX PAGE
-    res.redirect("blogs");
+    res.render("login");
+});
+
+app.post("/", function(req, res){
+
+    Login.find({ userID: req.body.login.userID, password: req.body.login.password}, function(err, foundUser){
+        if(!err){
+            console.log("1. user found successfully");
+            console.log(req.body.login);
+            res.redirect("/blogs");
+        }
+        else{
+            console.log("1. not able to find user from DB");
+            res.redirect("/");
+        }
+    });
+});
+
+app.get("/blogs/signup", function(req, res){
+    res.render("signup");
 });
 
 app.get("/blogs", function(req, res){
@@ -59,7 +85,7 @@ app.post("/blogs", function(req, res){                      // ADD NEW POST AND 
         if(!err){
             console.log("2. new blog added to database");
             console.log(newblog);
-            res.redirect("/");
+            res.redirect("/blogs");
         }
 
         else{
@@ -112,7 +138,7 @@ app.delete("/blogs/:id", function(req, res){                // DELETE A BLOG
     Blog.findByIdAndRemove (req.params.id, function(err,){
         if (!err) {
             console.log("6.Blog deleted");
-            res.redirect("/");
+            res.redirect("/blogs");
         }
         else {
             console.log("6. Problem in deleting blog");
