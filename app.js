@@ -40,20 +40,32 @@ var Blog= mongoose.model("blog", blogSchema);       // blog DB object
 var Login= mongoose.model("login", loginSchema);    // login DB object
 
 //ROUTES..............
-app.get("/", function (req, res) {                         // INDEX PAGE
+app.get("/", function(req, res){
+    res.redirect("/blogs");
+});
+
+app.get("/blogs", function (req, res) {                         // INDEX PAGE
     res.render("login");
 });
 
-app.post("/", function(req, res){
+app.post("/blogs", function(req, res){
 
-    Login.find({ userID: req.body.login.userID, password: req.body.login.password}, function(err, foundUser){
+    Login.findOne({ userID: req.body.login.userID, password: req.body.login.password}, function(err, foundUser){
         if(!err){
-            console.log("1. user found successfully");
-            console.log(req.body.login);
-            res.redirect("/blogs");
+            if(foundUser)
+            {
+                console.log("1. user found successfully");
+                console.log(foundUser);
+                res.redirect("/blogs/" + req.body.login.userID);
+            }
+
+            else{
+                console.log("1. wrong userID/password");
+                res.redirect("/blogs");
+            }
         }
         else{
-            console.log("1. not able to find user from DB");
+            console.log("1. error in connecting to DB");
             res.redirect("/");
         }
     });
@@ -68,7 +80,8 @@ app.post("/blogs/signup", function(req, res){
         if (!err) {
             console.log("2. new user added to database");
             console.log(newUser);
-            res.redirect("/blogs");
+            alert("User registered");
+            res.redirect("/blogs/" + req.body.login.userID);
         }
 
         else {
@@ -78,29 +91,37 @@ app.post("/blogs/signup", function(req, res){
     });
 });
 
-app.get("/blogs", function(req, res){
+app.get("/blogs/:user", function(req, res){
 
     Blog.find({}, function(err, blogs)
     {
         if(!err){
             console.log("1. retrieve data successfull");
-            res.render("index", {blogs: blogs});
+            res.render("index", {blogs: blogs, user: req.params.user});
         }
         else
             console.log("1. not able to retrieve from database");
     });
 });
 
-app.get("/blogs/new", function(req, res) {                  // NEW POST ADDING PAGE
-    res.render("new");
+app.get("/blogs/:user/new", function(req, res) {                  // NEW POST ADDING PAGE
+    res.render("new", {user: req.params.user});
 });
 
-app.post("/blogs", function(req, res){                      // ADD NEW POST AND REDIRECT TO INDEX PAGE
-    Blog.create(req.body.blog, function(err, newblog){
+app.post("/blogs/:user", function(req, res){                      // ADD NEW POST AND REDIRECT TO INDEX PAGE
+    // userID= req.params.user;
+
+    Blog.create({
+        userID: req.params.user,
+        title: req.body.blog.title,
+        image: req.body.blog.image,
+        body: req.body.blog.body
+
+    }, function(err, newblog){
         if(!err){
             console.log("2. new blog added to database");
             console.log(newblog);
-            res.redirect("/blogs");
+            res.redirect("/blogs/" + req.params.user);
         }
 
         else{
@@ -110,12 +131,12 @@ app.post("/blogs", function(req, res){                      // ADD NEW POST AND 
     });
 });
 
-app.get("/blogs/:id", function(req, res){                   // SHOW A PARTICULAR BLOG
+app.get("/blogs/:user/:id", function(req, res){                   // SHOW A PARTICULAR BLOG
     Blog.findById(req.params.id, function (err, foundblog) {
         if (!err) {
             console.log("3. Blog found");
             console.log(foundblog);
-            res.render("show", { blog: foundblog });
+            res.render("show", { blog: foundblog, user: req.params.user });
         }
         else{
             console.log("3. Blog not found");

@@ -1,4 +1,15 @@
 <%- include ("partials/header") %>
+<body id="mybody">
+    <div class="ui pointing inverted fixed menu">
+        <div class="ui container">
+
+            <a href="/blogs/<%= user %>" class="header item"><i class="code icon"></i>Blog Site</a>
+            <a href="/blogs/<%= user %>/my" class="item">My Posts</a>
+            <a href="/blogs/<%= user %>" class="item">All Posts</a>
+            <a href="/blogs/<%= user %>/new" class="item">New Post</a>
+
+        </div>
+    </div>
 
 <div class= "ui main text segment">
     <div class= "ui huge header"><%= blog.title %></div>
@@ -17,11 +28,14 @@
                         <p><%- blog.body %></p>
                     </div>
                 
-                    <a class="ui orange basic button big" href="/blogs/<%= blog._id %>/edit">EDIT POST</a>
+                    <% if(user == blog.userID){ %>
+                        <%= console.log(user+" "+blog.userID) %>
+                        <a class="ui orange basic button big" href="/blogs/<%= blog.userID %>/<%= blog._id %>/edit">EDIT POST</a>
                 
-                    <form id="deleteform" action="/blogs/<%= blog._id %>?_method=DELETE" method="POST">
-                        <button class="ui red basic button big" type="submit">DELETE</button>
-                    </form>
+                        <form id="deleteform" action="/blogs/<%= blog.userID %>/<%= blog._id %>?_method=DELETE" method="POST">
+                            <button class="ui red basic button big" type="submit">DELETE</button>
+                        </form>
+                    <% } %>
                 </div>
             </div>
         </div>
