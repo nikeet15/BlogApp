@@ -1,0 +1,20 @@
+<%- include("partials/header") %>
+
+<div class="ui main text segment container">
+    <div class="ui huge header">Login Page</div>
+
+    <form class="ui form" action="/blogs/signup" method="POST">
+        <div class="field">
+            <label>UserID</label>
+            <input type="text" name="login[userID]" placeholder="Enter userID:">
+        </div>
+
+        <div class="field">
+            <label>password</label>
+            <input type="password" name="login[password]" placeholder="Enter password">
+        </div>
+
+        <button class="ui blue basic button big" type="submit">Sign Up</button>
+    </form>
+</div>
+<%- include("partials/footer") %>

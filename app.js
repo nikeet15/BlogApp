@@ -63,6 +63,21 @@ app.get("/blogs/signup", function(req, res){
     res.render("signup");
 });
 
+app.post("/blogs/signup", function(req, res){
+    Login.create(req.body.login, function(err, newUser){
+        if (!err) {
+            console.log("2. new user added to database");
+            console.log(newUser);
+            res.redirect("/blogs");
+        }
+
+        else {
+            console.log("2. error in adding new user");
+            res.redirect("/blogs/signup");
+        }
+    });
+});
+
 app.get("/blogs", function(req, res){
 
     Blog.find({}, function(err, blogs)
