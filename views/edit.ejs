@@ -1,9 +1,21 @@
 <%- include("partials/header") %>
+<body id="mybody">
+    <div class="ui pointing inverted fixed menu">
+        <div class="ui container">
+
+            <a href="/blogs/all/<%= user %>" class="header item"><i class="code icon"></i>Blog Site</a>
+            <a href="/blogs/my/<%= user %>" class="item">My Posts</a>
+            <a href="/blogs/all/<%= user %>" class="item">All Posts</a>
+            <a href="/blogs/<%= user %>/new" class="item">New Post</a>
+            <a href="/blogs" class="item right">Logout</a>
+
+        </div>
+    </div>
 
 <div class="ui main text segment">
     <div class="ui huge header">Edit- <%= blog.title %></div>
 
-    <form class="ui form" action="/blogs/<%= blog._id %>?_method=PUT" method="POST">
+    <form class="ui form" action="/blogs/all/<%= user %>/<%= blog._id %>?_method=PUT" method="POST">
         
         <div class="field">
             <label>Title:</label>

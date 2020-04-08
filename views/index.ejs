@@ -3,10 +3,11 @@
     <div class="ui pointing inverted fixed menu">
         <div class="ui container">
 
-            <a href="/blogs/<%= user %>" class="header item"><i class="code icon"></i>Blog Site</a>
-            <a href="/blogs/<%= user %>/my" class="item">My Posts</a>
-            <a href="/blogs/<%= user %>" class="item">All Posts</a>
+            <a href="/blogs/all/<%= user %>" class="header item"><i class="code icon"></i>Blog Site</a>
+            <a href="/blogs/my/<%= user %>" class="item">My Posts</a>
+            <a href="/blogs/all/<%= user %>" class="item">All Posts</a>
             <a href="/blogs/<%= user %>/new" class="item">New Post</a>
+            <a href="/blogs" class="item right">Logout</a>
 
         </div>
     </div>
@@ -23,7 +24,7 @@
                     </div>
                 
                     <div class= "content">
-                        <a class="header" href= "/blogs/<%= blog.userID %>/<%= blog._id %>"><%= blog.title %></a>
+                        <a class="header" href= "/blogs/all/<%= user %>/<%= blog._id %>"><%= blog.title %></a>
 
                         <div class="meta">
                             <span><%= blog.userID.charAt(0).toUpperCase() + blog.userID.slice(1) %></span>
@@ -40,7 +41,7 @@
                         </div>
 
                         <div class= "extra">
-                            <a class="ui orange basic button big" href= "/blogs/<%= user %>/<%= blog._id %>">Read More</a>
+                            <a class="ui orange basic button big" href= "/blogs/all/<%= user %>/<%= blog._id %>">Read More</a>
                         </div>
                     </div>
                 </div>

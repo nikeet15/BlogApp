@@ -3,10 +3,11 @@
     <div class="ui pointing inverted fixed menu">
         <div class="ui container">
 
-            <a href="/blogs/<%= user %>" class="header item"><i class="code icon"></i>Blog Site</a>
-            <a href="/blogs/<%= user %>/my" class="item">My Posts</a>
-            <a href="/blogs/<%= user %>" class="item">All Posts</a>
+            <a href="/blogs/all/<%= user %>" class="header item"><i class="code icon"></i>Blog Site</a>
+            <a href="/blogs/my/<%= user %>" class="item">My Posts</a>
+            <a href="/blogs/all/<%= user %>" class="item">All Posts</a>
             <a href="/blogs/<%= user %>/new" class="item">New Post</a>
+            <a href="/blogs" class="item right">Logout</a>
 
         </div>
     </div>
@@ -17,11 +18,16 @@
     <div class= "ui top attached" id= "mybox">
         <div class="ui items">
             <div class= "item">
-                <div class= "ui medium bordered image">
+                <div class= "ui small bordered image">
                     <img src="<%= blog.image %>" alt="image1">
                 </div>
             
                 <div class= "content">
+
+                    <div class="meta">
+                        <span><%= blog.userID.charAt(0).toUpperCase() + blog.userID.slice(1) %></span>
+                    </div>
+
                     <span><strong><%= blog.created.toDateString() %></strong></span>
 
                     <div class="description">
@@ -29,10 +35,10 @@
                     </div>
                 
                     <% if(user == blog.userID){ %>
-                        <%= console.log(user+" "+blog.userID) %>
-                        <a class="ui orange basic button big" href="/blogs/<%= blog.userID %>/<%= blog._id %>/edit">EDIT POST</a>
+                        <%= console.log("current user: " +user+ " blog written by: " +blog.userID) %>
+                        <a class="ui orange basic button big" href="/blogs/my/<%= user %>/<%= blog._id %>/edit">EDIT POST</a>
                 
-                        <form id="deleteform" action="/blogs/<%= blog.userID %>/<%= blog._id %>?_method=DELETE" method="POST">
+                        <form id="deleteform" action="/blogs/my/<%= user %>/<%= blog._id %>?_method=DELETE" method="POST">
                             <button class="ui red basic button big" type="submit">DELETE</button>
                         </form>
                     <% } %>

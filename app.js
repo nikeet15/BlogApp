@@ -56,7 +56,7 @@ app.post("/blogs", function(req, res){
             {
                 console.log("1. user found successfully");
                 console.log(foundUser);
-                res.redirect("/blogs/" + req.body.login.userID);
+                res.redirect("/blogs/all/" + req.body.login.userID);
             }
 
             else{
@@ -80,8 +80,7 @@ app.post("/blogs/signup", function(req, res){
         if (!err) {
             console.log("2. new user added to database");
             console.log(newUser);
-            alert("User registered");
-            res.redirect("/blogs/" + req.body.login.userID);
+            res.redirect("/blogs/all/" + req.body.login.userID);
         }
 
         else {
@@ -91,16 +90,15 @@ app.post("/blogs/signup", function(req, res){
     });
 });
 
-app.get("/blogs/:user", function(req, res){
-
+app.get("/blogs/all/:user", function(req, res){
     Blog.find({}, function(err, blogs)
     {
         if(!err){
-            console.log("1. retrieve data successfull");
+            console.log("3. retrieve data successfull");
             res.render("index", {blogs: blogs, user: req.params.user});
         }
         else
-            console.log("1. not able to retrieve from database");
+            console.log("3. not able to retrieve from database");
     });
 });
 
@@ -108,7 +106,7 @@ app.get("/blogs/:user/new", function(req, res) {                  // NEW POST AD
     res.render("new", {user: req.params.user});
 });
 
-app.post("/blogs/:user", function(req, res){                      // ADD NEW POST AND REDIRECT TO INDEX PAGE
+app.post("/blogs/all/:user", function(req, res){                      // ADD NEW POST AND REDIRECT TO INDEX PAGE
     // userID= req.params.user;
 
     Blog.create({
@@ -119,65 +117,84 @@ app.post("/blogs/:user", function(req, res){                      // ADD NEW POS
 
     }, function(err, newblog){
         if(!err){
-            console.log("2. new blog added to database");
+            console.log("4. new blog added to database");
             console.log(newblog);
-            res.redirect("/blogs/" + req.params.user);
+            res.redirect("/blogs/all/" + req.params.user);
         }
 
         else{
-            console.log("2. error in adding new blog");
+            console.log("4. error in adding new blog");
             res.render("new");
         }
     });
 });
 
-app.get("/blogs/:user/:id", function(req, res){                   // SHOW A PARTICULAR BLOG
+app.get("/blogs/all/:user/:id", function(req, res){                   // SHOW A PARTICULAR BLOG
     Blog.findById(req.params.id, function (err, foundblog) {
         if (!err) {
-            console.log("3. Blog found");
+            console.log("5. Blog found");
             console.log(foundblog);
             res.render("show", { blog: foundblog, user: req.params.user });
         }
         else{
-            console.log("3. Blog not found");
+            console.log("5. Blog not found");
         }
     });
 });
 
-app.get("/blogs/:id/edit", function(req, res){              // UPDATE A PARTICULAR BLOG
+app.get("/blogs/my/:user", function(req, res){                    // SHOW ONLY USER'S BLOGS
+    Blog.find({userID: req.params.user}, function(err, foundBlog){
+        if (!err) {
+            console.log("6. Blog found");
+            console.log(foundBlog);
+            res.render("index", { blogs: foundBlog, user: req.params.user });
+            // res.send("reached my blogs page");
+        }
+        else {
+            console.log("6. my Blog not found");
+        }
+    });
+});
+
+app.get("/blogs/my/:user/:id/edit", function(req, res){              // UPDATE A PARTICULAR BLOG
     Blog.findById(req.params.id, function (err, foundBlog) {
         if (!err) {
-            console.log("4.edit Blog found");
+            console.log("7.edit Blog found");
             console.log(foundBlog);
-            res.render("edit", { blog: foundBlog });
+            res.render("edit", { blog: foundBlog, user: req.params.user });
         }
         else {
-            console.log("4. edit Blog not found");
+            console.log("7. edit Blog not found");
         }
     });
 });
 
-app.put("/blogs/:id", function(req, res){                   // PUT THE UPDATED BLOG TO DATABASE AND REDIRECT TO /blog/:id
-    Blog.findByIdAndUpdate(req.params.id, req.body.blog, function(err, updatedBlog){
+app.put("/blogs/all/:user/:id", function(req, res){                   // PUT THE UPDATED BLOG TO DATABASE AND REDIRECT TO /blog/all/:user/:id
+    Blog.findByIdAndUpdate(req.params.id, {
+        title: req.body.blog.title,
+        image: req.body.blog.image,
+        body: req.body.blog.body
+
+    }, function(err, updatedBlog){
         if (!err) {
-            console.log("5.Blog updated");
+            console.log("8.Blog updated");
             console.log(req.body.blog);
-            res.redirect("/blogs/"+req.params.id);
+            res.redirect("/blogs/all/" + req.params.user+ "/" +req.params.id);
         }
         else {
-            console.log("5. Problem in updating blog");
+            console.log("8. Problem in updating blog");
         }
     });
 });
 
-app.delete("/blogs/:id", function(req, res){                // DELETE A BLOG
+app.delete("/blogs/my/:user/:id", function(req, res){                        // DELETE A BLOG
     Blog.findByIdAndRemove (req.params.id, function(err,){
         if (!err) {
-            console.log("6.Blog deleted");
-            res.redirect("/blogs");
+            console.log("9.Blog deleted");
+            res.redirect("/blogs/all/" + req.params.user);
         }
         else {
-            console.log("6. Problem in deleting blog");
+            console.log("9. Problem in deleting blog");
         }
     }); 
 });
