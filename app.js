@@ -8,6 +8,7 @@ var bodyparser = require("body-parser");
 app.use(bodyparser.urlencoded({ extended: true }));
 
 app.use(express.static("public"));                  //making public a static directory
+app.use(express.static("models"));
 app.set("view engine", "ejs");                      //if written no need to write .ejs only write name of file
 
 var methodOverride= require("method-override");
@@ -22,22 +23,8 @@ mongoose.connect('mongodb://localhost:27017/EmployeeDB', { useNewUrlParser: true
         console.log("error in DB cnnection" + err);
 });
 
-//MONGOOSE MODEL SCHEMA.............
-var blogSchema= mongoose.Schema({
-    userID: String,
-    title: String,
-    image: String,
-    body: String,
-    created: {type: Date, default: Date.now}
-});
-
-var loginSchema = mongoose.Schema({
-    userID: String,
-    password: String
-});
-
-var Blog= mongoose.model("blog", blogSchema);       // blog DB object
-var Login= mongoose.model("login", loginSchema);    // login DB object
+var Blog= require("./models/blogs");                // .js is optional 
+var Login= require("./models/logins");              // taking in models in current app.js file
 
 //ROUTES..............
 app.get("/", function(req, res){
@@ -102,7 +89,7 @@ app.get("/blogs/all/:user", function(req, res){
     });
 });
 
-app.get("/blogs/:user/new", function(req, res) {                  // NEW POST ADDING PAGE
+app.get("/blogs/:user/new", function(req, res) {                       // NEW POST ADDING PAGE
     res.render("new", {user: req.params.user});
 });
 
@@ -142,7 +129,7 @@ app.get("/blogs/all/:user/:id", function(req, res){                   // SHOW A 
     });
 });
 
-app.get("/blogs/my/:user", function(req, res){                    // SHOW ONLY USER'S BLOGS
+app.get("/blogs/my/:user", function(req, res){                          // SHOW ONLY USER'S BLOGS
     Blog.find({userID: req.params.user}, function(err, foundBlog){
         if (!err) {
             console.log("6. Blog found");
@@ -156,7 +143,7 @@ app.get("/blogs/my/:user", function(req, res){                    // SHOW ONLY U
     });
 });
 
-app.get("/blogs/my/:user/:id/edit", function(req, res){              // UPDATE A PARTICULAR BLOG
+app.get("/blogs/my/:user/:id/edit", function(req, res){                 // UPDATE A PARTICULAR BLOG
     Blog.findById(req.params.id, function (err, foundBlog) {
         if (!err) {
             console.log("7.edit Blog found");
@@ -169,7 +156,7 @@ app.get("/blogs/my/:user/:id/edit", function(req, res){              // UPDATE A
     });
 });
 
-app.put("/blogs/all/:user/:id", function(req, res){                   // PUT THE UPDATED BLOG TO DATABASE AND REDIRECT TO /blog/all/:user/:id
+app.put("/blogs/all/:user/:id", function(req, res){                     // PUT THE UPDATED BLOG TO DATABASE AND REDIRECT TO /blog/all/:user/:id
     Blog.findByIdAndUpdate(req.params.id, {
         title: req.body.blog.title,
         image: req.body.blog.image,
@@ -187,7 +174,7 @@ app.put("/blogs/all/:user/:id", function(req, res){                   // PUT THE
     });
 });
 
-app.delete("/blogs/my/:user/:id", function(req, res){                        // DELETE A BLOG
+app.delete("/blogs/my/:user/:id", function(req, res){                       // DELETE A BLOG
     Blog.findByIdAndRemove (req.params.id, function(err,){
         if (!err) {
             console.log("9.Blog deleted");
