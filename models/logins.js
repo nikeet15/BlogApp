@@ -3,11 +3,11 @@ var mongoose= require("mongoose");
 var passportLocalMongoose = require("passport-local-mongoose");
 
 var loginSchema = mongoose.Schema({
-    userID: String,
+    username: String,
     password: String
 });
 
-loginSchema.plugin(passportLocalMongoose);           // for authentication
+loginSchema.plugin(passportLocalMongoose);           // for using pasport methods....
 
-var Login = mongoose.model("login", loginSchema);    // login DB object
+var Login = mongoose.model("_login", loginSchema);    // login DB object
 module.exports= Login;

@@ -25,7 +25,7 @@
                 <div class= "content">
 
                     <div class="meta">
-                        <span><%= blog.userID.charAt(0).toUpperCase() + blog.userID.slice(1) %></span>
+                        <span><%= blog.username.charAt(0).toUpperCase() + blog.username.slice(1) %></span>
                     </div>
 
                     <span><strong><%= blog.created.toDateString() %></strong></span>
@@ -34,8 +34,8 @@
                         <p><%- blog.body %></p>
                     </div>
                 
-                    <% if(user == blog.userID){ %>
-                        <%= console.log("current user: " +user+ " blog written by: " +blog.userID) %>
+                    <% if(user == blog.username){ %>
+                        <%= console.log("current user: " +user+ " blog written by: " +blog.username) %>
                         <a class="ui orange basic button big" href="/blogs/my/<%= user %>/<%= blog._id %>/edit">EDIT POST</a>
                 
                         <form id="deleteform" action="/blogs/my/<%= user %>/<%= blog._id %>?_method=DELETE" method="POST">

@@ -1,34 +1,36 @@
 //Ctrl+j to toggle terminal
 
 //APP CONFIG............
-var express = require("express");
-var bodyparser = require("body-parser");
-var methodOverride = require("method-override");
-var mongoose = require("mongoose"); 
-var passport = require("passport");
-var localStrategy = require("passport-local");
-var passportLocalMongoose = require("passport-local-mongoose");
-var Blog = require("./models/blogs");                // .js is optional 
-var Login = require("./models/logins");              // taking in models in current app.js file
+var express                     = require("express");
+var bodyparser                  = require("body-parser");
+var methodOverride              = require("method-override");
+var mongoose                    = require("mongoose"); 
+var passport                    = require("passport");
+var localStrategy               = require("passport-local");
+var passportLocalMongoose       = require("passport-local-mongoose");
+var Blog                        = require("./models/blogs");                       // .js is optional 
+var Login                       = require("./models/logins");                     // taking in models in current app.js file
 
-var app = express();                                 // express() return an object
+var app = express();                                            // express() return an object
 app.use(bodyparser.urlencoded({ extended: true }));
-app.use(express.static("public"));                   //making public a static directory
-app.set("view engine", "ejs");                       //if written no need to write .ejs only write name of file
-app.use(methodOverride("_method"));                  //ENABLES METHOD OVERRIDING
+app.use(express.static("public"));                              //making public a static directory
+app.set("view engine", "ejs");                                  //if written no need to write .ejs only write name of file
+app.use(methodOverride("_method"));                             //ENABLES METHOD OVERRIDING
 
 app.use(require("express-session")({
-    secret: "rusty is the best and cutest dog",
+    secret: "rusty is the best and cutest dog",                 // secret code into which encoding is done
     resave: false,
     saveUninitialized: false
 }));
-app.use(passport.initialize());                      // tells express to use passport
+app.use(passport.initialize());                                 // tells express to use passport
 app.use(passport.session());
 
-passport.serializeUser(Login.serializeUser());      // responsible for encodeing data and putting it to a session
-passport.deserializeUser(Login.deserializeUser());  // responsible for reading,taking,decoding data from session
+passport.serializeUser(Login.serializeUser());                  // responsible for encodeing data and putting it to a session
+passport.deserializeUser(Login.deserializeUser());              // responsible for reading,taking,decoding data from session
 
-mongoose.connect('mongodb://localhost:27017/EmployeeDB', {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false }, function (err) {
+mongoose.connect('mongodb://localhost:27017/EmployeeDB', {useNewUrlParser: true, 
+        useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false }, 
+        function (err) {
     if (!err)
         console.log("Database connection successfull");
 
@@ -36,7 +38,7 @@ mongoose.connect('mongodb://localhost:27017/EmployeeDB', {useNewUrlParser: true,
         console.log("error in DB cnnection" + err);
 });
 
-//ROUTES..............
+// ROUTES...................................................
 app.get("/", function(req, res){
     res.redirect("/blogs");
 });
@@ -46,18 +48,17 @@ app.get("/blogs", function (req, res) {                         // INDEX PAGE
 });
 
 app.post("/blogs", function(req, res){
-
-    Login.findOne({ userID: req.body.login.userID, password: req.body.login.password}, function(err, foundUser){
+    Login.findOne({ username: req.body.login.username, password: req.body.login.password}, function(err, foundUser){
         if(!err){
             if(foundUser)
             {
                 console.log("1. user found successfully");
                 console.log(foundUser);
-                res.redirect("/blogs/all/" + req.body.login.userID);
+                res.redirect("/blogs/all/" + req.body.login.username);
             }
 
             else{
-                console.log("1. wrong userID/password");
+                console.log("1. wrong username/password");
                 res.redirect("/blogs");
             }
         }
@@ -73,15 +74,18 @@ app.get("/blogs/signup", function(req, res){
 });
 
 app.post("/blogs/signup", function(req, res){
-    Login.create(req.body.login, function(err, newUser){
-        if (!err) {
-            console.log("2. new user added to database");
+    Login.register(new Login({ username: req.body.login.username }), req.body.login.password, function(err, newUser){
+        if(!err){
+            console.log("2. user registered successfully");
             console.log(newUser);
-            res.redirect("/blogs/all/" + req.body.login.userID);
+
+            passport.authenticate("local")(req, res, function(){
+                res.redirect("/blogs/all/" + req.body.login.username);      
+            });
         }
 
-        else {
-            console.log("2. error in adding new user");
+        else{
+            console.log("2. error in adding new user to DB "+err)
             res.redirect("/blogs/signup");
         }
     });
@@ -103,11 +107,11 @@ app.get("/blogs/:user/new", function(req, res) {                       // NEW PO
     res.render("new", {user: req.params.user});
 });
 
-app.post("/blogs/all/:user", function(req, res){                      // ADD NEW POST AND REDIRECT TO INDEX PAGE
-    // userID= req.params.user;
+app.post("/blogs/all/:user", function(req, res){                       // ADD NEW POST AND REDIRECT TO INDEX PAGE
+    // username= req.params.user;
 
     Blog.create({
-        userID: req.params.user,
+        username: req.params.user,
         title: req.body.blog.title,
         image: req.body.blog.image,
         body: req.body.blog.body
@@ -126,7 +130,7 @@ app.post("/blogs/all/:user", function(req, res){                      // ADD NEW
     });
 });
 
-app.get("/blogs/all/:user/:id", function(req, res){                   // SHOW A PARTICULAR BLOG
+app.get("/blogs/all/:user/:id", function(req, res){                     // SHOW A PARTICULAR BLOG
     Blog.findById(req.params.id, function (err, foundblog) {
         if (!err) {
             console.log("5. Blog found");
@@ -140,7 +144,7 @@ app.get("/blogs/all/:user/:id", function(req, res){                   // SHOW A 
 });
 
 app.get("/blogs/my/:user", function(req, res){                          // SHOW ONLY USER'S BLOGS
-    Blog.find({userID: req.params.user}, function(err, foundBlog){
+    Blog.find({username: req.params.user}, function(err, foundBlog){
         if (!err) {
             console.log("6. Blog found");
             console.log(foundBlog);
@@ -184,7 +188,7 @@ app.put("/blogs/all/:user/:id", function(req, res){                     // PUT T
     });
 });
 
-app.delete("/blogs/my/:user/:id", function(req, res){                       // DELETE A BLOG
+app.delete("/blogs/my/:user/:id", function(req, res){                    // DELETE A BLOG
     Blog.findByIdAndRemove (req.params.id, function(err,){
         if (!err) {
             console.log("9.Blog deleted");
@@ -196,7 +200,7 @@ app.delete("/blogs/my/:user/:id", function(req, res){                       // D
     }); 
 });
  
-//starting server code..............................
+// STARTING SERVER CODE................................
 app.listen(3000, function () {
     console.log("Server started");
 });
