@@ -6,7 +6,6 @@ var app = express();                                 // express() return an obje
 
 var bodyparser = require("body-parser");
 app.use(bodyparser.urlencoded({ extended: true }));
-
 app.use(express.static("public"));                  //making public a static directory
 app.use(express.static("models"));
 app.set("view engine", "ejs");                      //if written no need to write .ejs only write name of file
