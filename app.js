@@ -25,6 +25,7 @@ app.use(require("express-session")({
 app.use(passport.initialize());                                 // tells express to use passport
 app.use(passport.session());
 
+passport.use(new localStrategy(Login.authenticate()));
 passport.serializeUser(Login.serializeUser());                  // responsible for encodeing data and putting it to a session
 passport.deserializeUser(Login.deserializeUser());              // responsible for reading,taking,decoding data from session
 
@@ -47,26 +48,11 @@ app.get("/blogs", function (req, res) {                         // INDEX PAGE
     res.render("login");
 });
 
-app.post("/blogs", function(req, res){
-    Login.findOne({ username: req.body.login.username, password: req.body.login.password}, function(err, foundUser){
-        if(!err){
-            if(foundUser)
-            {
-                console.log("1. user found successfully");
-                console.log(foundUser);
-                res.redirect("/blogs/all/" + req.body.login.username);
-            }
-
-            else{
-                console.log("1. wrong username/password");
-                res.redirect("/blogs");
-            }
-        }
-        else{
-            console.log("1. error in connecting to DB");
-            res.redirect("/");
-        }
-    });
+app.post("/blogs", passport.authenticate("local", {
+     
+    successRedirect: "/blogs/all/sanat",
+    failureRedirect: "/"
+}), function(req, res){
 });
 
 app.get("/blogs/signup", function(req, res){
@@ -80,6 +66,7 @@ app.post("/blogs/signup", function(req, res){
             console.log(newUser);
 
             passport.authenticate("local")(req, res, function(){
+                console.log("authentication successfull");
                 res.redirect("/blogs/all/" + req.body.login.username);      
             });
         }
