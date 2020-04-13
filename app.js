@@ -2,28 +2,39 @@
 
 //APP CONFIG............
 var express = require("express");
-var app = express();                                 // express() return an object 
-
 var bodyparser = require("body-parser");
+var methodOverride = require("method-override");
+var mongoose = require("mongoose"); 
+var passport = require("passport");
+var localStrategy = require("passport-local");
+var passportLocalMongoose = require("passport-local-mongoose");
+var Blog = require("./models/blogs");                // .js is optional 
+var Login = require("./models/logins");              // taking in models in current app.js file
+
+var app = express();                                 // express() return an object
 app.use(bodyparser.urlencoded({ extended: true }));
-app.use(express.static("public"));                  //making public a static directory
-app.use(express.static("models"));
-app.set("view engine", "ejs");                      //if written no need to write .ejs only write name of file
+app.use(express.static("public"));                   //making public a static directory
+app.set("view engine", "ejs");                       //if written no need to write .ejs only write name of file
+app.use(methodOverride("_method"));                  //ENABLES METHOD OVERRIDING
 
-var methodOverride= require("method-override");
-app.use(methodOverride("_method"));                 //ENABLES METHOD OVERRIDING
+app.use(require("express-session")({
+    secret: "rusty is the best and cutest dog",
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());                      // tells express to use passport
+app.use(passport.session());
 
-var mongoose = require("mongoose");
-mongoose.connect('mongodb://localhost:27017/EmployeeDB', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }, function (err) {
+passport.serializeUser(Login.serializeUser());      // responsible for encodeing data and putting it to a session
+passport.deserializeUser(Login.deserializeUser());  // responsible for reading,taking,decoding data from session
+
+mongoose.connect('mongodb://localhost:27017/EmployeeDB', {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false }, function (err) {
     if (!err)
         console.log("Database connection successfull");
 
     else
         console.log("error in DB cnnection" + err);
 });
-
-var Blog= require("./models/blogs");                // .js is optional 
-var Login= require("./models/logins");              // taking in models in current app.js file
 
 //ROUTES..............
 app.get("/", function(req, res){
@@ -184,7 +195,6 @@ app.delete("/blogs/my/:user/:id", function(req, res){                       // D
         }
     }); 
 });
-
  
 //starting server code..............................
 app.listen(3000, function () {
