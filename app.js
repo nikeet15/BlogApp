@@ -186,7 +186,7 @@ app.delete("/blogs/my/:user/:id", function(req, res){                       // D
     }); 
 });
 
- 
+
 //starting server code..............................
 app.listen(3000, function () {
     console.log("Server started");
