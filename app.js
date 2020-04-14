@@ -8,7 +8,6 @@ var bodyparser = require("body-parser");
 app.use(bodyparser.urlencoded({ extended: true }));
 
 app.use(express.static("public"));                  //making public a static directory
-app.use(express.static("models"));
 app.set("view engine", "ejs");                      //if written no need to write .ejs only write name of file
 
 var methodOverride= require("method-override");
@@ -26,7 +25,29 @@ mongoose.connect('mongodb://localhost:27017/EmployeeDB', { useNewUrlParser: true
 var Blog= require("./models/blogs");                // .js is optional 
 var Login= require("./models/logins");              // taking in models in current app.js file
 
-//ROUTES..............
+// ROUTES LOGGING....................................
+
+app.use(logger);                                    // ROUTE LOGGER
+function logger(req, res, next){
+    next();
+    consolo.log("Logs.......")
+    console.log("request made to- " + req.protocol + '://' + req.get('host') + req.originalUrl);
+    console.log("request type- "+ req.protocol+ " method- "+req.method);
+    console.log("at " + new Date().toLocaleString());
+};
+
+app.post("/blogs", (req,res,next)=>{                // USER TRYING TO LOG, USER LOGGER
+    next();
+    console.log("user requested- " + req.body.login.userID + " at " + console.log(new Date().toLocaleString())); 
+})
+
+app.post("/blogs/signup", (req,res,next)=>{         // USER TRYING TO LOG, USER LOGGER
+    next();
+    console.log("user requested- " + req.body.login.userID + " at " + console.log(new Date().toLocaleString())); 
+})
+
+// ROUTES..............................................
+
 app.get("/", function(req, res){
     res.redirect("/blogs");
 });
@@ -96,7 +117,8 @@ app.get("/blogs/:user/new", function(req, res) {                       // NEW PO
 app.post("/blogs/all/:user", function(req, res){                      // ADD NEW POST AND REDIRECT TO INDEX PAGE
     // userID= req.params.user;
 
-    Blog.create({
+    Blog.create(
+    {
         userID: req.params.user,
         title: req.body.blog.title,
         image: req.body.blog.image,
@@ -185,7 +207,6 @@ app.delete("/blogs/my/:user/:id", function(req, res){                       // D
         }
     }); 
 });
-
 
 //starting server code..............................
 app.listen(3000, function () {
